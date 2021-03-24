@@ -1,0 +1,175 @@
+package exercitii;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.io.FileNotFoundException;
+
+class Echipament
+{
+	private String denumire;
+	private int nr_inv;
+	private int pret;
+	public Echipament(String denumire,int nr_inv,int pret)
+	{
+		this.denumire=denumire;
+		this.nr_inv=nr_inv;
+		this.pret=pret;
+	}
+	public String toString()
+	{
+		return denumire+" "+nr_inv+" "+pret+" ";
+	}
+}
+class Imprimante extends Echipament
+{
+	private int ppm;
+	private String modul;
+	private String rezolutie;
+	private int pagini_cartus;
+	public Imprimante(String denumire,int nr_inv,int pret,int ppm,String modul,String rezolutie,int pagini_cartus)
+	{
+		super(denumire,nr_inv,pret);
+		this.ppm=ppm;
+		this.modul=modul;
+		this.rezolutie=rezolutie;
+		this.pagini_cartus=pagini_cartus;
+	}
+	public String toString()
+	{
+		return super.toString()+" "+ppm+" "+modul+" "+rezolutie+" "+pagini_cartus;
+	}
+	public void setModul(String modul)
+	{
+		this.modul=modul;
+	}
+}
+class Copiatoare extends Echipament
+{
+	private int pagini_toner;
+	private String formatul;
+	public Copiatoare(String denumire,int nr_inv,int pret,int pagini_toner,String formatul)
+	{
+		super(denumire,nr_inv,pret);
+		this.pagini_toner=pagini_toner;
+		this.formatul=formatul;
+	}
+	public String toString()
+	{
+		return super.toString()+" "+pagini_toner+" "+formatul;
+	}
+	public void setFormatul(String formatul)
+	{
+		this.formatul=formatul;
+	}
+}
+class Sisteme extends Echipament
+{
+	private String tip_monitor;
+	private int viteza_procesor;
+	private int capacitate_hdd;
+	private String sistem_operare;
+	public Sisteme(String denumire,int nr_inv,int pret,String tip_monitor,int viteza_procesor,int capacitate_hdd,String sistem_operare)
+	{
+		super(denumire,nr_inv,pret);
+		this.tip_monitor=tip_monitor;
+		this.viteza_procesor=viteza_procesor;
+		this.capacitate_hdd=capacitate_hdd;
+		this.sistem_operare=sistem_operare;
+	}
+	public String toString()
+	{
+		return super.toString()+" "+tip_monitor+" "+viteza_procesor+" "+capacitate_hdd+" "+sistem_operare;
+	}
+}
+public class EXERCITIU
+{
+
+	public static void main(String[] args)throws IOException
+	{
+		String linie;
+		ArrayList<Echipament> echip = new ArrayList<>();
+		BufferedReader add = new BufferedReader(new InputStreamReader(new FileInputStream("src/exemplu.txt")));
+		BufferedReader bf=new BufferedReader(new InputStreamReader(System.in));
+		
+		while((linie=add.readLine())!=null)
+     {
+			String[] aux = linie.split(";");
+			String denumire = aux[0];
+			int nr_inv = Integer.parseInt(aux[1]);
+			int pret = Integer.parseInt(aux[2]);
+			
+			
+			if(aux[3].equalsIgnoreCase("Imprimante"))
+			{
+				int ppm = Integer.parseInt(aux[4]);
+				String modul = aux[5];
+				String rezolutie = aux[6];
+				int pagini_cartus = Integer.parseInt(aux[7]);
+				echip.add(new Imprimante(denumire, nr_inv, pret, ppm, modul, rezolutie, pagini_cartus));
+			}
+			if(aux[3].equalsIgnoreCase("Copiatoare"))
+			{
+				int pagini_toner = Integer.parseInt(aux[4]);
+				String formatul = aux[5];
+				echip.add(new Copiatoare(denumire, nr_inv, pret,pagini_toner,formatul));	
+			}
+			if(aux[3].equalsIgnoreCase("Sisteme"))
+			{
+				String tip_monitor = aux[4];
+				int viteza_procesor = Integer.parseInt(aux[5]);
+				int capacitate_hdd = Integer.parseInt(aux[6]);
+				String sistem_operare = aux[7];
+				echip.add(new Sisteme(denumire, nr_inv, pret,tip_monitor,viteza_procesor,capacitate_hdd,sistem_operare));
+			}
+      }
+		int optiune;
+		BufferedReader opt = new BufferedReader(new InputStreamReader(System.in));
+		do{
+			System.out.println("1.Afisarea imprimantelor");
+			System.out.println("2.Afisarea copiatoarelor");
+			System.out.println("3.Afisarea sistemelor de calcul");
+			System.out.println("9.Iesire");
+			System.out.println("Introduceti optiunea dumneavoastra: ");
+			
+			optiune = Integer.parseInt(opt.readLine());
+			switch(optiune)
+			{
+			case 1:
+				System.out.print("Imprimante: \n");
+				for(Echipament imp : echip)
+					if(imp instanceof Imprimante )
+						System.out.println(imp);
+				break;
+			case 2:
+				System.out.print("Copiatoarele: \n");
+				for(Echipament cop : echip)
+					if(cop instanceof Copiatoare)
+						System.out.println(cop);
+				break;
+			case 3:
+				System.out.print("Sistemele de calcul: \n");
+				for(Echipament sis : echip)
+					if(sis instanceof Sisteme)
+						System.out.println(sis);
+				break;
+			case 4:break;
+			case 5:
+				System.out.print("Dati alt mod pt imprimanta: ");
+				String altmod = bf.readLine();
+				Imprimante imp = null;
+				imp.setModul(altmod);					
+				break;
+			case 6:break;
+			case 7:break;
+			case 8:break;
+			case 9:break;
+			default:
+				System.out.println("Ati introdus optiunea gresita!\n");
+				break;
+			}
+		}while(optiune!=9);
+		add.close();
+	}
+}
