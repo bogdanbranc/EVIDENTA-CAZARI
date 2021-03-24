@@ -1,0 +1,341 @@
+#include <iostream>
+#include <string>
+#include <conio.h>
+using namespace std;
+struct adresa
+{
+	string localitate, tara, strada;
+	int cod_postal, numar;
+};
+struct contact
+{
+	string email, facebook, site;
+	int nr_telefon;
+};
+typedef enum { piscina = 0, restaurant = 1, sala_conferinta = 2, sala_sport = 3 }dotari;
+class Lista;
+class Agentie
+{
+private:
+	string nume;
+	int tip_derivat,id_cazare, numar_camere, numar_locuri, numar_ocupate, pret;
+	bool loc_parcare;
+	adresa a;
+	contact c;
+	Agentie *urm;
+public:
+	Agentie(int tip,string num, int id, int nr_camere, int nr_locuri, int nr_ocupate, int pre,bool parcare,string loc, string tar, string strad, int cod, int nr, string em, string fb, string sit, int tel)
+	{
+		tip_derivat = tip;
+		nume = num;
+		id_cazare = id;
+		numar_camere = nr_camere;
+		numar_locuri = nr_locuri;
+		numar_ocupate = nr_ocupate;
+		pret = pre;
+		loc_parcare = parcare;
+		a.localitate = loc;
+		a.tara = tar;
+		a.strada = strad;
+		a.cod_postal = cod;
+		a.numar = nr;
+		c.email = em;
+		c.nr_telefon = tel;
+		c.site = sit;
+		c.facebook = fb;
+		urm = NULL;
+	}
+	virtual void afisare()
+	{
+		cout << "--------------------------------------\n";
+		if (tip_derivat == 1)
+			cout << "Tip:Hotel" << endl;
+		else if (tip_derivat == 2)
+			cout << "Tip:Pensiune" << endl;
+		cout << "Id-ul cazarii este: " << id_cazare << endl;
+		cout << "Numele: " << nume << endl;
+		cout << "Numar camere: " << numar_camere << endl;
+		cout << "Numar locuri intr-o camera: " << numar_locuri << endl;
+		cout << "Are loc de parcare[0/1]?: " << loc_parcare << endl;
+		cout << "Pretul: " << pret << endl;
+		cout << "Localitatea: " << a.localitate << endl;
+		cout << "Tara: " << a.tara << endl;
+		cout << "Strada[fara spatiu!]: " << a.strada << endl;
+		cout << "Codul postal: " << a.cod_postal << endl;
+		cout << "Numarul: " << a.numar << endl;
+		cout << "Emailul: " << c.email << endl;
+		cout << "Numarul de telefon: " << c.nr_telefon << endl;
+		cout << "Siteul este: " << c.site << endl;
+		cout << "Adresa de facebook: " << c.facebook << endl;
+	}
+	friend class Lista;
+};
+class Hotel :public Agentie
+{
+private:
+	dotari dot;
+	int numar_stele;
+public:
+	Hotel(int tip, string num, int id, int nr_camere, int nr_locuri, int nr_ocupate, int pre, bool parcare, string loc, string tar, string strad, int cod, int nr, string em, string fb, string sit, int tel, dotari d, int nr_stele) :Agentie(tip, num, id, nr_camere, nr_locuri, nr_ocupate, pre, parcare, loc, tar, strad, cod, nr, em, fb, sit, tel)
+	{
+		dot = d;
+		numar_stele = nr_stele;
+	}
+	void afisare()
+	{
+		Agentie::afisare();
+		if (dot == 0)
+			cout << "Dotare:piscina" << endl;
+		if (dot == 1)
+			cout << "Dotare:restaurant" << endl;
+		if (dot == 2)
+			cout << "Dotare:sala de conferinta" << endl;
+		if (dot == 3)
+			cout << "Dotare:sala de sport" << endl;
+		cout << "Numarul de stele este: " << numar_stele << endl;
+	}
+	friend class Lista;
+};
+class Pensiune :public Agentie
+{
+private:
+	int numar_margarete;
+	bool bed_break;
+public:
+	Pensiune(int tip, string num, int id, int nr_camere, int nr_locuri, int nr_ocupate, int pre, bool parcare, string loc, string tar, string strad, int cod, int nr, string em, string fb, string sit, int tel, bool bb, int nr_margarete) :Agentie(tip, num, id, nr_camere, nr_locuri, nr_ocupate, pre, parcare, loc, tar, strad, cod, nr, em, fb, sit, tel)
+	{
+		numar_margarete = nr_margarete;
+		bed_break = bb;
+	}
+	void afisare()
+	{
+		Agentie::afisare();
+		cout << "Numarul de margarete este: " << numar_margarete << endl;
+		cout << "Are bed and break inclus?[0:False/1-True]: " << bed_break << endl;
+	}
+	friend class Lista;
+};
+class Lista
+{
+public:
+	Agentie *head, *ultim;
+	void adaugare(Agentie *ag);
+	void afisarea_listei();
+	void afisare_conditionata(string x, string y);
+	void stergere(string n);
+};
+class MyException
+{
+public:
+	string str_what;
+	int what;
+	MyException()
+	{
+		str_what = "0";
+		what = 0;
+	}
+	MyException(string st, int e)
+	{
+		str_what = st;
+		what = e;
+	}
+};
+void Lista::adaugare(Agentie *a)
+{
+	Agentie *p;
+	p = head;
+	if (p)
+	{
+		if (a->nume < p->nume)
+		{
+			a->urm = head;
+			head = a;
+		}
+		else
+		{
+			while (p->urm && p->urm->nume < a->nume)
+				p = p->urm;
+			a->urm = p->urm;
+			p->urm = a;
+		}
+	}
+	else
+		head = a;
+}
+void Lista::afisarea_listei()
+{
+	Agentie *a;
+	a = head;
+	if (!a)
+		cout << "Lista e vida!";
+	else
+		while (a)
+		{
+			a->afisare();
+			a = a->urm;
+			system("pause");
+		}
+}
+void introducere(Lista &l, int x)
+{
+	Agentie *ag;
+	string Nume, Localitate, Tara, Strada, Email, Facebook, Site;
+	int Id_cazare, Numar_camere, Numar_locuri, Numar_ocupate, Pret, Cod_postal, Numar, Nr_telefon, Numar_stele, Numar_margarete;
+	bool Loc_parcare, Bed_break;
+	int Dot;
+	cout << "Introduceti numele: ";
+	cin >> Nume;
+	cout << "Da-ti id-ul: ";
+	cin >> Id_cazare;
+	cout << "Da-ti numarul de camere: ";
+	cin >> Numar_camere;
+	cout << "Da-ti numarul de locuri intr-o camera: ";
+	cin >> Numar_locuri;
+	cout << "Da-ti numarul de camere ocupate: ";
+	cin >> Numar_ocupate;
+	cout << "Da-ti localitatea: ";
+	cin >> Localitate;
+	cout << "Da-ti tara: ";
+	cin >> Tara;
+	cout << "Da-ti strada: ";
+	cin >> Strada;
+	cout << "Da-ti codul postal: ";
+	cin >> Cod_postal;
+	cout << "Da-ti numarul: ";
+	cin >> Numar;
+	cout << "Specificati daca are loc de parcare[0-False\1-True]: ";
+	cin >> Loc_parcare;
+	try
+	{
+		cout << "Da-ti pretul: ";
+		cin >> Pret;
+		if (Pret < 0)
+			throw MyException("Introduceti un numar pozitiv!", Pret);
+	}
+	catch (MyException e)
+	{
+		do {
+			cout << "Da-ti un pret(val pozitiva): ";
+			cin >> Pret;
+		} while (Pret < 0);
+	}
+	cout << "Da-ti numarul de telefon: ";
+	cin >> Nr_telefon;
+	cout << "Da-ti emailul: ";
+	cin >> Email;
+	cout << "Da-ti siteul: ";
+	cin >> Site;
+	cout << "Da-ti adresa de facebook: ";
+	cin >> Facebook;
+	if (x == 0)
+	{
+		Hotel *h;
+		cout << "Da-ti dotarea hotelului[0-piscina 1-retaurant 2-sala de conferinta 3-sala de sport]: ";
+		cin >> Dot;
+		cout << "Da-ti numarul de stele: ";
+		cin >> Numar_stele;
+		dotari dota = static_cast<dotari>(Dot);
+		h = new Hotel(1, Nume, Id_cazare, Numar_camere, Numar_locuri, Numar_ocupate, Pret, Loc_parcare, Localitate, Tara, Strada, Cod_postal, Numar, Email, Facebook, Site, Nr_telefon, dota, Numar_stele);
+		ag = h;
+		l.adaugare(ag);
+	}
+	else if (x == 1)
+	{
+		Pensiune *pen;
+		cout << "Da-ti numarul de margarete: ";
+		cin >> Numar_margarete;
+		cout << "Specificati daca include Bed and Breakfast[0-True\1-False]: ";
+		cin >> Bed_break;
+		pen = new Pensiune(2, Nume, Id_cazare, Numar_camere, Numar_locuri, Numar_ocupate, Pret, Loc_parcare, Localitate, Tara, Strada, Cod_postal, Numar, Email, Facebook, Site, Nr_telefon, Bed_break, Numar_margarete);
+		ag = pen;
+		l.adaugare(ag);
+	}
+}
+void Lista::afisare_conditionata(string x, string y)
+{
+	Agentie *a;
+	a = head;
+	if (!a)
+		cout << "Lista e vida!";
+	else
+		while (a)
+		{
+			if(a->loc_parcare==1)
+				if (a->a.localitate == x && a->a.tara == y)
+					a->afisare();
+			a = a->urm;
+		}
+}
+void Lista::stergere(string n)
+{
+	Agentie *q, *p;
+	q = p = head;
+	if (p)
+	{
+		while (p && p->nume != n)
+		{
+			q = p;
+			p = p->urm;
+		}
+		if (p)
+		{
+			if (p != q)
+			{
+				q->urm = p->urm;
+				delete p;
+			}
+			else
+			{
+				head = p->urm;
+				delete p;
+			}
+		}
+		else cout << "Numele nu exista!";
+	}
+	else cout << "Lista e vida!";
+}
+void main()
+{
+	int opt;
+	Lista l;
+	string tara, localitate, nm;
+	l.head = NULL;
+	do {
+		system("CLS");
+		cout << "1.Introducere hotel\n";
+		cout << "2.Introducere pensiune\n";
+		cout << "3.Afisare cazari\n";
+		cout << "4.Afisarea unei cazari cu parcare dintr-o anumita localitate si tara\n";
+		cout << "5.Stergerea unei cazari\n";
+		cout << "6.Iesire\n";
+		cout << "Optiunea dvs este: ";
+		cin >> opt;
+		switch (opt)
+		{
+		case 1:
+			introducere(l, 0);
+			break;
+		case 2:
+			introducere(l, 1);
+			break;
+		case 3:
+			l.afisarea_listei();
+			break;
+		case 4:
+			cout << "Introduceti localitatea: ";
+			cin >> localitate;
+			cout << "Introduceti tara: ";
+			cin >> tara;
+			l.afisare_conditionata(localitate, tara);
+			system("pause");
+			break;
+		case 5:
+			cout << "Introduceti un nume pentru a sterge cazarea: ";
+			cin >> nm;
+			l.stergere(nm);
+			break;
+		case 6:break;
+		default:cout << "Optiune gresita!";
+		}
+	} while (opt != 6);
+}
